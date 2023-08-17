@@ -13,7 +13,7 @@ import com.septianen.imagemachine.model.Machine
 
 class ImageListAdapter(
     private val listener: MachineListener,
-    private val images: List<String>
+    private val images: List<Image>
 ): RecyclerView.Adapter<ImageListAdapter.ViewHolder>(){
 
     private lateinit var context: Context
@@ -44,7 +44,7 @@ class ImageListAdapter(
 
         Glide
             .with(context)
-            .load(images[position])
+            .load(images[position].imagePath)
             .centerCrop()
             .placeholder(R.drawable.baseline_qr_code_scanner_24)
             .into(holder.ivMachine);

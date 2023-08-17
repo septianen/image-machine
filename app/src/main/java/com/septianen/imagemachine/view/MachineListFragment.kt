@@ -1,6 +1,7 @@
 package com.septianen.imagemachine.view
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +21,7 @@ import com.septianen.imagemachine.model.Temporary
 import com.septianen.imagemachine.utils.Resource
 import com.septianen.imagemachine.viewmodel.MachineListViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlin.math.log
 
 @AndroidEntryPoint
 class MachineListFragment : Fragment(), MachineListener {
@@ -58,7 +60,6 @@ class MachineListFragment : Fragment(), MachineListener {
         viewModel.machineLiveData.observe(viewLifecycleOwner) {
             when(it) {
                 is Resource.Success -> {
-                    showMessage(it.data.toString())
                     machines = it.data ?: ArrayList()
                     updateView()
                 }
@@ -89,7 +90,13 @@ class MachineListFragment : Fragment(), MachineListener {
     }
 
     private fun openNextPage() {
-        Temporary.imagePath = null
+        Temporary.image = null
         findNavController().navigate(R.id.openMachineDetail)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        viewModel.getMachines()
     }
 }

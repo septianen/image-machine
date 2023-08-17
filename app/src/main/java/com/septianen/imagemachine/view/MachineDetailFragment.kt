@@ -3,6 +3,7 @@ package com.septianen.imagemachine.view
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -38,12 +39,14 @@ class MachineDetailFragment : Fragment(), MachineListener {
     private lateinit var binding: FragmentMachineDetailBinding
     private lateinit var machine: Machine
 
-    private var imagePaths: MutableList<String> = ArrayList()
+    private var imagePaths: MutableList<Image> = ArrayList()
 
     private val datePicker =
         MaterialDatePicker.Builder.datePicker()
             .setTitleText("Select date")
             .build()
+
+    private var imagePosition = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -105,7 +108,10 @@ class MachineDetailFragment : Fragment(), MachineListener {
         viewModel.imagesLiveData.observe(viewLifecycleOwner) {
             when(it) {
                 is Resource.Success -> {
-                    imagePaths = it.data as MutableList<String>
+                    imagePaths = it.data as MutableList<Image>
+
+                    Log.d("TAG", "V imagesLiveData: imagePaths = ${imagePaths.size}")
+
 
                     updateImage()
                 }
@@ -201,7 +207,11 @@ class MachineDetailFragment : Fragment(), MachineListener {
                             data.clipData!!.getItemAt(item).uri,
                             requireContext()
                         )
-                        imagePath?.let { imagePaths.add(it) }
+                        imagePath?.let { imagePaths.add(
+                            Image(
+                                imagePath = imagePath
+                            )
+                        ) }
                     }
                 } else {
                     val imagePath = data.data?.let {
@@ -210,8 +220,15 @@ class MachineDetailFragment : Fragment(), MachineListener {
                             requireContext()
                         )
                     }
-                    imagePath?.let { imagePaths.add(it) }
+                    imagePath?.let { imagePaths.add(
+                        Image(
+                            imagePath = imagePath
+                        )
+                    ) }
                 }
+
+
+                Log.d("TAG", "V gallerylauncer: imagePaths = ${imagePaths.size}")
 
                 updateImage()
             }
@@ -219,7 +236,7 @@ class MachineDetailFragment : Fragment(), MachineListener {
 
     override fun onItemClicked(position: Int) {
         val intent = Intent(requireContext(), ImagePreviewActivity::class.java)
-        Temporary.imagePath = imagePaths[position]
+        Temporary.image = imagePaths[position]
         imagePreviewlauncer.launch(intent)
     }
 
@@ -228,9 +245,8 @@ class MachineDetailFragment : Fragment(), MachineListener {
         // RESULT_OK if user click delete button
         if (result.resultCode == RESULT_OK) {
 
-            viewModel.deleteImage(Temporary.imagePath)
-
-            showMessage(Message.SUCCESS_DELETE_IMAGE)
+            imagePaths.remove(Temporary.image)
+            updateImage()
         }
     }
 }

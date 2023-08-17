@@ -24,7 +24,7 @@ class MachineListViewModel @Inject constructor(
         getMachines()
     }
 
-    private fun getMachines() = viewModelScope.launch(Dispatchers.IO) {
+    fun getMachines() = viewModelScope.launch(Dispatchers.IO) {
         val machines = repository.getMachines()
 
         if (machines.isNullOrEmpty()) {

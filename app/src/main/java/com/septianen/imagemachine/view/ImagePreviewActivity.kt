@@ -21,7 +21,7 @@ class ImagePreviewActivity : AppCompatActivity() {
         binding = ActivityImagePreviewBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        imagePath = Temporary.imagePath
+        imagePath = Temporary.image?.imagePath ?: ""
         updateImage()
 
         binding.btnDelete.setOnClickListener {

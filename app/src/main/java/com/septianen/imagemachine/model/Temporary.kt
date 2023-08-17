@@ -4,5 +4,5 @@ object Temporary {
 
     var machine: Machine? = null
     var images: List<Image>? = null
-    var imagePath: String? = null
+    var image: Image? = null
 }
