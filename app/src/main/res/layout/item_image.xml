@@ -6,9 +6,10 @@
 
     <ImageView
         android:id="@+id/iv_machine_image"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:padding="4dp"
         android:layout_margin="4dp"
-        android:src="@color/green"/>
+        android:src="@color/default_font"/>
 
 </FrameLayout>

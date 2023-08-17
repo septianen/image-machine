@@ -3,13 +3,14 @@ package com.septianen.imagemachine.adapter
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.septianen.imagemachine.R
 import com.septianen.imagemachine.model.Image
-import com.septianen.imagemachine.model.Machine
+
 
 class ImageListAdapter(
     private val listener: MachineListener,
@@ -17,6 +18,9 @@ class ImageListAdapter(
 ): RecyclerView.Adapter<ImageListAdapter.ViewHolder>(){
 
     private lateinit var context: Context
+
+    private var isImageSelected = false
+    private var selectedPositions = ArrayList<Int>()
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
 
@@ -41,7 +45,6 @@ class ImageListAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-
         Glide
             .with(context)
             .load(images[position].imagePath)
@@ -50,8 +53,32 @@ class ImageListAdapter(
             .into(holder.ivMachine);
 
         holder.itemView.setOnClickListener {
-            listener.onItemClicked(position)
+            if (isImageSelected) {
+                if (selectedPositions.contains(position)) {
+                    selectedPositions.remove(position)
+                    holder.ivMachine.background = null
+                } else {
+                    selectedPositions.add(position)
+                    holder.ivMachine.background = context.getDrawable(R.color.primary)
+                }
+
+                listener.onItemLongClicked(selectedPositions)
+            } else {
+                listener.onItemClicked(position)
+            }
         }
+
+        holder.itemView.setOnLongClickListener(OnLongClickListener {
+
+            isImageSelected = true
+
+            if (!selectedPositions.contains(position))
+                selectedPositions.add(position)
+
+            holder.ivMachine.background = context.getDrawable(R.color.primary)
+            listener.onItemLongClicked(selectedPositions)
+            true
+        })
     }
 
 }

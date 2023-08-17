@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.septianen.imagemachine.R
 import com.septianen.imagemachine.adapter.ImageListAdapter
 import com.septianen.imagemachine.adapter.MachineListener
 import com.septianen.imagemachine.constant.Constant
@@ -46,7 +47,8 @@ class MachineDetailFragment : Fragment(), MachineListener {
             .setTitleText("Select date")
             .build()
 
-    private var imagePosition = 0
+    private var isImageSelected = false
+    private var selectedPositions: List<Int> = ArrayList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,7 +65,11 @@ class MachineDetailFragment : Fragment(), MachineListener {
         observeLiveData()
 
         binding.btnImage.setOnClickListener {
-            openGallery()
+            if (isImageSelected) {
+                deleteSelectedImages()
+            } else {
+                openGallery()
+            }
         }
 
         binding.btnDone.setOnClickListener {
@@ -126,6 +132,7 @@ class MachineDetailFragment : Fragment(), MachineListener {
             when(it) {
                 is Resource.Success -> {
                     it.data?.let { it1 -> showMessage(it1) }
+                    isImageSelected = false
                 }
 
                 is Resource.Error -> {
@@ -177,6 +184,18 @@ class MachineDetailFragment : Fragment(), MachineListener {
         machine.qrNumber = convertToInt(binding.etNumber.text.toString())
 
         viewModel.saveData(machine, imagePaths)
+    }
+
+    private fun deleteSelectedImages() {
+        if (isImageSelected) {
+            var deletedImages = ArrayList<Image>()
+            for (position in selectedPositions) {
+                deletedImages.add(imagePaths[position])
+            }
+            imagePaths.removeAll(deletedImages)
+        }
+
+        updateImage()
     }
 
     private fun showMessage(message: String) {
@@ -238,6 +257,18 @@ class MachineDetailFragment : Fragment(), MachineListener {
         val intent = Intent(requireContext(), ImagePreviewActivity::class.java)
         Temporary.image = imagePaths[position]
         imagePreviewlauncer.launch(intent)
+    }
+
+    override fun onItemLongClicked(positions: List<Int>) {
+
+        if (positions.isEmpty()) {
+            isImageSelected = false
+            binding.btnImage.text = getString(R.string.machine_image)
+        } else {
+            isImageSelected = true
+            selectedPositions = positions
+            binding.btnImage.text = getString(R.string.delete_image)
+        }
     }
 
     private val imagePreviewlauncer = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->

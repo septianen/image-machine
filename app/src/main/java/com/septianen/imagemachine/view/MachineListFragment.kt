@@ -89,6 +89,10 @@ class MachineListFragment : Fragment(), MachineListener {
         openNextPage()
     }
 
+    override fun onItemLongClicked(positions: List<Int>) {
+
+    }
+
     private fun openNextPage() {
         Temporary.image = null
         findNavController().navigate(R.id.openMachineDetail)
