@@ -15,7 +15,7 @@ import com.septianen.imagemachine.model.Image
 
 class ImageListAdapter(
     private val listener: MachineListener,
-    private val images: List<Image>
+    private var images: List<Image>? = null
 ): RecyclerView.Adapter<ImageListAdapter.ViewHolder>(){
 
     private lateinit var context: Context
@@ -41,14 +41,14 @@ class ImageListAdapter(
     }
 
     override fun getItemCount(): Int {
-        return images.size
+        return images?.size ?: 0
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         Glide
             .with(context)
-            .load(images[position].imagePath)
+            .load(images?.get(position)?.imagePath)
             .centerCrop()
             .placeholder(R.drawable.baseline_qr_code_scanner_24)
             .into(holder.ivMachine);
@@ -82,4 +82,10 @@ class ImageListAdapter(
         })
     }
 
+    fun setData(newImages: List<Image>?) {
+        this.images = newImages
+
+        isImageSelected = false
+        selectedPositions.clear()
+    }
 }

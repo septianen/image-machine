@@ -72,6 +72,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/hint_machine_name"
+                    android:maxLines="50"
+                    android:inputType="textPersonName"
+                    android:imeOptions="actionNext"
                     android:textSize="14sp"
                     android:textColor="@color/default_font"/>
 
@@ -91,8 +94,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/hint_machine_type"
-                    android:textSize="14sp"
-                    android:textColor="@color/default_font"/>
+                    android:maxLength="50"
+                    android:inputType="textPersonName"
+                    android:imeOptions="actionNext"
+                    android:textColor="@color/default_font"
+                    android:textSize="14sp" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -109,8 +115,10 @@
                     android:id="@+id/et_number"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/hint_machine_type"
+                    android:hint="@string/hint_machine_number"
                     android:inputType="number"
+                    android:maxLength="50"
+                    android:imeOptions="actionDone"
                     android:textSize="14sp"
                     android:textColor="@color/default_font"/>
 
@@ -131,7 +139,7 @@
                     android:layout_height="50dp"
                     android:clickable="true"
                     android:focusable="false"
-                    android:hint="@string/hint_machine_type"
+                    android:hint="@string/hint_machine_date"
                     android:inputType="none"
                     app:endIconDrawable="@drawable/baseline_calendar_today_24"
                     android:textSize="14sp"

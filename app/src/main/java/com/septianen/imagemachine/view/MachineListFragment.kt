@@ -35,14 +35,13 @@ class MachineListFragment : Fragment(), MachineListener, SortListener {
 
     private lateinit var binding: FragmentMachineListBinding
 
-    private lateinit var machines: List<Machine>
-
+    private var machines: List<Machine>? = ArrayList()
     private var adapter: MachineListAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentMachineListBinding.inflate(layoutInflater, container, false)
 
         return binding.root
@@ -81,6 +80,9 @@ class MachineListFragment : Fragment(), MachineListener, SortListener {
 
                 is Resource.Error -> {
                     showMessage(it.message)
+
+                    machines = ArrayList()
+                    updateView()
                 }
             }
         }
@@ -93,7 +95,14 @@ class MachineListFragment : Fragment(), MachineListener, SortListener {
     }
 
     private fun updateView() {
-        adapter?.setData(machines)
+
+        machines?.let { adapter?.setData(it) }
+
+        if (machines.isNullOrEmpty()) {
+            binding.rvMachine.visibility = View.GONE
+        } else {
+            binding.rvMachine.visibility = View.VISIBLE
+        }
     }
 
     private fun showMessage(message: String?) {
@@ -101,17 +110,12 @@ class MachineListFragment : Fragment(), MachineListener, SortListener {
     }
 
     override fun onItemClicked(position: Int) {
-        Temporary.machine = machines[position].copy()
+        Temporary.machine = machines?.get(position)?.copy()
         openNextPage()
     }
 
     override fun onItemLongClicked(positions: List<Int>) {
 
-    }
-
-    private fun openNextPage() {
-        Temporary.image = null
-        findNavController().navigate(R.id.openMachineDetail)
     }
 
     override fun onResume() {
@@ -125,5 +129,10 @@ class MachineListFragment : Fragment(), MachineListener, SortListener {
         sortDialog.dismiss()
 
         viewModel.sortMachines(category, sort)
+    }
+
+    private fun openNextPage() {
+        Temporary.image = null
+        findNavController().navigate(R.id.openMachineDetail)
     }
 }

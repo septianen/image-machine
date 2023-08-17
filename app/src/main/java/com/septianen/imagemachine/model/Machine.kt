@@ -10,7 +10,7 @@ data class Machine(
     var id: Long? = null,
     var name: String? = null,
     var type: String? = null,
-    var qrNumber: Int? = null,
+    var qrNumber: String? = null,
     var date: Long? = null,
     var thumbnail: String? = null
 

@@ -1,21 +1,28 @@
 package com.septianen.imagemachine.view
 
+import android.Manifest
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.viewModels
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.navigation.fragment.findNavController
 import com.septianen.imagemachine.R
 import com.septianen.imagemachine.constant.Message
 import com.septianen.imagemachine.databinding.FragmentHomeBinding
-import com.septianen.imagemachine.utils.Resource
-import com.septianen.imagemachine.viewmodel.MachineListViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 class HomeFragment : Fragment() {
+
+    private val cameraPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            if (it) {
+                openQrScanner()
+            } else {
+                Toast.makeText(requireContext(), Message.REQUIRE_PERMISSION, Toast.LENGTH_SHORT).show()
+            }
+        }
 
     private lateinit var binding: FragmentHomeBinding
 
@@ -32,7 +39,7 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.cvCodeReader.setOnClickListener {
-            showMessage("COming Soon")
+            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
 
         binding.cvMachineData.setOnClickListener {
@@ -40,7 +47,8 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun showMessage(message: String?) {
-        Toast.makeText(requireContext(), message ?: Message.SOMETHING_HAPPENED, Toast.LENGTH_SHORT).show()
+    private fun openQrScanner() {
+
+        findNavController().navigate(R.id.openScanner)
     }
 }

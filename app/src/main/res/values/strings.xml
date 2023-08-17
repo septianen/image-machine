@@ -12,8 +12,10 @@
     <string name="machine_number">Machine QR Code Number</string>
     <string name="machine_date">Last Maintenance Date</string>
 
-    <string name="hint_machine_name">Machin 101</string>
-    <string name="hint_machine_type">Ma 233</string>
+    <string name="hint_machine_name">Name</string>
+    <string name="hint_machine_type">Type</string>
+    <string name="hint_machine_number">123456789</string>
+    <string name="hint_machine_date">01/01/2023</string>
 
     <string name="machine_image">Machine Image</string>
     <string name="delete_image">Delete Image</string>
@@ -30,4 +32,6 @@
     <string name="category">Category</string>
     <string name="sort_by">Sort By</string>
     <string name="sort">Sort</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

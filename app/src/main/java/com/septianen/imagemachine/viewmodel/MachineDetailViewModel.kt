@@ -25,10 +25,9 @@ class MachineDetailViewModel @Inject constructor(
     val saveItemLiveData: MutableLiveData<Resource<String>> = MutableLiveData()
 
     private lateinit var machine: Machine
-    private lateinit var imagePaths: List<Image>
+    private lateinit var images: List<Image>
 
     init {
-
         getMachines()
     }
 
@@ -41,9 +40,9 @@ class MachineDetailViewModel @Inject constructor(
 
     private fun getImages() {
 
-        imagePaths = machine.id?.let { repository.getImages(it) } ?: ArrayList()
+        images = machine.id?.let { repository.getImages(it) } ?: ArrayList()
 
-        imagesLiveData.postValue(Resource.Success(imagePaths))
+        imagesLiveData.postValue(Resource.Success(images))
     }
 
     fun saveData(machine: Machine, imagePaths: List<Image>?) = viewModelScope.launch(Dispatchers.IO) {
@@ -51,13 +50,13 @@ class MachineDetailViewModel @Inject constructor(
         when {
             machine.name.isNullOrEmpty() -> postErrorValidaton(Message.EMPTY_MACHINE_NAME)
             machine.type.isNullOrEmpty() -> postErrorValidaton(Message.EMPTY_MACHINE_TYPE)
-            machine.qrNumber == null -> postErrorValidaton(Message.EMPTY_MACHINE_NUMBER)
+            machine.qrNumber.isNullOrEmpty() -> postErrorValidaton(Message.EMPTY_MACHINE_NUMBER)
             machine.date == null ->
                 postErrorValidaton(Message.EMPTY_MACHINE_DATE)
             imagePaths.isNullOrEmpty() -> postErrorValidaton(Message.EMPTY_IMAGES)
             else -> {
 
-                this@MachineDetailViewModel.imagePaths = imagePaths
+                this@MachineDetailViewModel.images = imagePaths
 
                 // Save Machine
                 saveMachine()
@@ -69,32 +68,21 @@ class MachineDetailViewModel @Inject constructor(
 
     private fun saveMachine() = viewModelScope.launch(Dispatchers.IO) {
         if (machine.thumbnail.isNullOrEmpty()) {
-            machine.thumbnail = imagePaths[0].imagePath
+            machine.thumbnail = images[0].imagePath
         }
         machine.id = repository.upsertMachine(machine)
         this@MachineDetailViewModel.machine = machine
         Temporary.machine = machine.copy()
 
         // Save Images
-        saveImages(imagePaths)
+        saveImages(images)
 
         machineLiveData.postValue(Resource.Success(machine))
     }
 
     private fun saveImages(imagePaths: List<Image>) = viewModelScope.launch(Dispatchers.IO) {
-        this@MachineDetailViewModel.imagePaths = imagePaths
+        this@MachineDetailViewModel.images = imagePaths
         val images = ArrayList<Image>()
-
-        Log.d("TAG", "VM saveImages: imagePaths = ${imagePaths.size}")
-
-//        for (path in imagePaths) {
-//            images.add(
-//                Image(
-//                    machineId = machine.id,
-//                    imagePath = path,
-//                )
-//            )
-//        }
 
         imagePaths.map { it.copy(machineId = machine.id) }
 
@@ -104,8 +92,6 @@ class MachineDetailViewModel @Inject constructor(
 
         machine.id?.let { repository.updateImages(it, imagePaths) }
 
-        Log.d("TAG", "VM saveImages: images = ${images.size}")
-
         imagesLiveData.postValue(Resource.Success(imagePaths))
     }
 
@@ -113,9 +99,8 @@ class MachineDetailViewModel @Inject constructor(
         saveItemLiveData.postValue(Resource.Error(message))
     }
 
-    fun deleteData(machine: Machine, images: List<Image>) = viewModelScope.launch(Dispatchers.IO) {
-        repository.deleteImages(images)
-        repository.deleteMachine(machine)
+    fun deleteData(machineId: Long) = viewModelScope.launch(Dispatchers.IO) {
+        machineId?.let { repository.deleteMachineData(it) }
     }
 
     fun countMaximumImage(selctedImage: Int, savedImage: Int): Int {

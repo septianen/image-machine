@@ -4,14 +4,16 @@ object Message {
 
     const val SOMETHING_HAPPENED = "Something Happened"
     const val NO_DATA = "No Data"
+    const val DATA_NOT_FOUND = "Data Not Found"
     const val SUCCESS_SAVE_DATA = "Saved"
-    const val SUCCESS_DELETE_IMAGE = "Image Deleted"
 
     const val EMPTY_MACHINE_NAME = "Machine Name is Empty"
     const val EMPTY_MACHINE_TYPE = "Machine Type is Empty"
     const val EMPTY_MACHINE_NUMBER = "Machine QR Number is Empty"
     const val EMPTY_MACHINE_DATE = "Last Maintenance Date is Empty"
     const val EMPTY_IMAGES = "Images is Empty"
+
+    const val REQUIRE_PERMISSION = "All permissions are required"
 
     object Dialog {
         const val LEAVE = "You Wanna Leave?"

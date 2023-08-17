@@ -3,7 +3,6 @@ package com.septianen.imagemachine.view
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -26,7 +25,6 @@ import com.septianen.imagemachine.listener.DialogListener
 import com.septianen.imagemachine.model.Image
 import com.septianen.imagemachine.model.Machine
 import com.septianen.imagemachine.model.Temporary
-import com.septianen.imagemachine.utils.CommonUtil.Companion.convertToInt
 import com.septianen.imagemachine.utils.CommonUtil.Companion.convertToString
 import com.septianen.imagemachine.utils.DateUtil
 import com.septianen.imagemachine.utils.ImageUtil.Companion.getRealPathFromURI
@@ -37,6 +35,16 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 
 class MachineDetailFragment : Fragment(), MachineListener, DialogListener {
+
+    private val imagePreviewlauncer = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+
+        // RESULT_OK if user click delete button
+        if (result.resultCode == RESULT_OK) {
+
+            images.remove(Temporary.image)
+            updateImage()
+        }
+    }
 
     private val backDialog by lazy {
         ActionDialog(
@@ -57,19 +65,18 @@ class MachineDetailFragment : Fragment(), MachineListener, DialogListener {
     }
 
     private val viewModel by viewModels<MachineDetailViewModel>()
-
-    private lateinit var binding: FragmentMachineDetailBinding
-    private lateinit var machine: Machine
-
-    private var imagePaths: MutableList<Image> = ArrayList()
-
     private val datePicker =
         MaterialDatePicker.Builder.datePicker()
             .setTitleText("Select date")
             .build()
 
+    private lateinit var binding: FragmentMachineDetailBinding
+    private lateinit var machine: Machine
+
+    private var images: MutableList<Image> = ArrayList()
     private var isImageSelected = false
     private var selectedPositions: List<Int> = ArrayList()
+    private var adapter: ImageListAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -138,10 +145,7 @@ class MachineDetailFragment : Fragment(), MachineListener, DialogListener {
         viewModel.imagesLiveData.observe(viewLifecycleOwner) {
             when(it) {
                 is Resource.Success -> {
-                    imagePaths = it.data as MutableList<Image>
-
-                    Log.d("TAG", "V imagesLiveData: imagePaths = ${imagePaths.size}")
-
+                    images = it.data as MutableList<Image>
 
                     updateImage()
                 }
@@ -174,6 +178,8 @@ class MachineDetailFragment : Fragment(), MachineListener, DialogListener {
     }
 
     private fun setupView() {
+        adapter = ImageListAdapter(this)
+        binding.rvImages.adapter = adapter
         binding.rvImages.layoutManager = LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
     }
 
@@ -188,10 +194,16 @@ class MachineDetailFragment : Fragment(), MachineListener, DialogListener {
         binding.etType.setText(machine.type)
         binding.etNumber.setText(convertToString(machine.qrNumber))
         binding.etDate.setText(DateUtil.getDate(machine.date))
+
+        if (isImageSelected) {
+            binding.btnImage.text = getString(R.string.delete_image)
+        } else {
+            binding.btnImage.text = getString(R.string.machine_image)
+        }
     }
 
     private fun updateImage() {
-        val adapter = ImageListAdapter(this, imagePaths)
+        val adapter = ImageListAdapter(this, images)
         binding.rvImages.adapter = adapter
     }
 
@@ -205,20 +217,24 @@ class MachineDetailFragment : Fragment(), MachineListener, DialogListener {
     private fun updateData() {
         machine.name = convertToString(binding.etName.text.toString())
         machine.type = convertToString(binding.etType.text.toString())
-        machine.qrNumber = convertToInt(binding.etNumber.text.toString())
+        machine.qrNumber = convertToString(binding.etNumber.text.toString())
 
-        viewModel.saveData(machine, imagePaths)
+        viewModel.saveData(machine, images)
     }
 
     private fun deleteSelectedImages() {
         if (isImageSelected) {
             var deletedImages = ArrayList<Image>()
             for (position in selectedPositions) {
-                deletedImages.add(imagePaths[position])
+                deletedImages.add(images[position])
             }
-            imagePaths.removeAll(deletedImages)
+            images.removeAll(deletedImages)
+            adapter?.setData(images)
+
+            isImageSelected = false
         }
 
+        updateView()
         updateImage()
     }
 
@@ -242,7 +258,7 @@ class MachineDetailFragment : Fragment(), MachineListener, DialogListener {
             if (data != null) {
 
                 if (data.clipData != null) {
-                    val counter = viewModel.countMaximumImage(data.clipData!!.itemCount, imagePaths.size)
+                    val counter = viewModel.countMaximumImage(data.clipData!!.itemCount, images.size)
 
                     for (item in 0 until counter) {
 
@@ -250,7 +266,7 @@ class MachineDetailFragment : Fragment(), MachineListener, DialogListener {
                             data.clipData!!.getItemAt(item).uri,
                             requireContext()
                         )
-                        imagePath?.let { imagePaths.add(
+                        imagePath?.let { images.add(
                             Image(
                                 imagePath = imagePath
                             )
@@ -263,15 +279,12 @@ class MachineDetailFragment : Fragment(), MachineListener, DialogListener {
                             requireContext()
                         )
                     }
-                    imagePath?.let { imagePaths.add(
+                    imagePath?.let { images.add(
                         Image(
                             imagePath = imagePath
                         )
                     ) }
                 }
-
-
-                Log.d("TAG", "V gallerylauncer: imagePaths = ${imagePaths.size}")
 
                 updateImage()
             }
@@ -279,7 +292,7 @@ class MachineDetailFragment : Fragment(), MachineListener, DialogListener {
 
     override fun onItemClicked(position: Int) {
         val intent = Intent(requireContext(), ImagePreviewActivity::class.java)
-        Temporary.image = imagePaths[position]
+        Temporary.image = images[position]
         imagePreviewlauncer.launch(intent)
     }
 
@@ -287,22 +300,12 @@ class MachineDetailFragment : Fragment(), MachineListener, DialogListener {
 
         if (positions.isEmpty()) {
             isImageSelected = false
-            binding.btnImage.text = getString(R.string.machine_image)
         } else {
             isImageSelected = true
             selectedPositions = positions
-            binding.btnImage.text = getString(R.string.delete_image)
         }
-    }
 
-    private val imagePreviewlauncer = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-
-        // RESULT_OK if user click delete button
-        if (result.resultCode == RESULT_OK) {
-
-            imagePaths.remove(Temporary.image)
-            updateImage()
-        }
+        updateView()
     }
 
     override fun onCloseDialog(requestCode: Int) {
@@ -317,7 +320,7 @@ class MachineDetailFragment : Fragment(), MachineListener, DialogListener {
             Constant.Dialog.BACK -> backDialog.dismiss()
             Constant.Dialog.DELETE -> {
                 deleteDialog.dismiss()
-                viewModel.deleteData(machine, imagePaths)
+                machine.id?.let { viewModel.deleteData(it) }
             }
         }
         findNavController().popBackStack()
