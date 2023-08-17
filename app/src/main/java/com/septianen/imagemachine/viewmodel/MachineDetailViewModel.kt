@@ -97,6 +97,14 @@ class MachineDetailViewModel @Inject constructor(
         saveItemLiveData.postValue(Resource.Error(message))
     }
 
+    fun deleteImage(image: String?) = viewModelScope.launch(Dispatchers.IO) {
+        if (image != null) {
+            repository.deleteImage(image)
+            imagePaths.remove(image)
+            imagesLiveData.postValue(Resource.Success(imagePaths))
+        }
+    }
+
     fun deleteData(machine: Machine, images: List<String>) = viewModelScope.launch(Dispatchers.IO) {
         repository.deleteImages(images)
         repository.deleteMachine(machine)

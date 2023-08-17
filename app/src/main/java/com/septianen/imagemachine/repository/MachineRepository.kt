@@ -13,5 +13,6 @@ class MachineRepository @Inject constructor(private val machineDao: MachineDao) 
 
     fun getImages(machineId: Long) = machineDao.getImages(machineId)
     fun upsertImages(images: List<Image>) = machineDao.upsertImages(images)
-    fun deleteImages(images: List<String>) = machineDao.deleteImage(images)
+    fun deleteImage(image: String) = machineDao.deleteImage(image)
+    fun deleteImages(images: List<String>) = machineDao.deleteImages(images)
 }

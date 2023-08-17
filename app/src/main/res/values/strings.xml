@@ -16,6 +16,5 @@
     <string name="hint_machine_type">Ma 233</string>
 
     <string name="machine_image">Machine Image</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="delete_image">Delete Image</string>
 </resources>

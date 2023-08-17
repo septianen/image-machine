@@ -25,8 +25,10 @@ interface MachineDao {
     fun upsertImage(image: Image): Long
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun upsertImages(images: List<Image>): List<Long>
+    @Query("DELETE FROM image WHERE imagePath = :image")
+    fun deleteImage(image: String)
     @Query("DELETE FROM image WHERE imagePath in (:images)")
-    fun deleteImage(images: List<String>)
+    fun deleteImages(images: List<String>)
     @Query("SELECT imagePath FROM ${Table.IMAGE} WHERE machineId = :id")
     fun getImages(id: Long): List<String>
 }

@@ -1,5 +1,6 @@
 package com.septianen.imagemachine.view
 
+import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -15,10 +16,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.septianen.imagemachine.adapter.ImageListAdapter
 import com.septianen.imagemachine.adapter.MachineListener
+import com.septianen.imagemachine.constant.Constant
 import com.septianen.imagemachine.constant.Message
 import com.septianen.imagemachine.databinding.FragmentMachineDetailBinding
 import com.septianen.imagemachine.model.Image
 import com.septianen.imagemachine.model.Machine
+import com.septianen.imagemachine.model.Temporary
 import com.septianen.imagemachine.utils.CommonUtil.Companion.convertToInt
 import com.septianen.imagemachine.utils.CommonUtil.Companion.convertToString
 import com.septianen.imagemachine.utils.DateUtil
@@ -215,6 +218,19 @@ class MachineDetailFragment : Fragment(), MachineListener {
         }
 
     override fun onItemClicked(position: Int) {
+        val intent = Intent(requireContext(), ImagePreviewActivity::class.java)
+        Temporary.imagePath = imagePaths[position]
+        imagePreviewlauncer.launch(intent)
+    }
 
+    private val imagePreviewlauncer = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+
+        // RESULT_OK if user click delete button
+        if (result.resultCode == RESULT_OK) {
+
+            viewModel.deleteImage(Temporary.imagePath)
+
+            showMessage(Message.SUCCESS_DELETE_IMAGE)
+        }
     }
 }

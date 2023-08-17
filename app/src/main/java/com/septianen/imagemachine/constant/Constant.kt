@@ -13,7 +13,7 @@ object Constant {
         const val IMAGE = "image"
     }
 
-    object Date {
-
+    object IntentExtra {
+        const val IMAGE_PATH = "PATH"
     }
 }

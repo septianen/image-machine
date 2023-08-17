@@ -89,6 +89,7 @@ class MachineListFragment : Fragment(), MachineListener {
     }
 
     private fun openNextPage() {
+        Temporary.imagePath = null
         findNavController().navigate(R.id.openMachineDetail)
     }
 }
