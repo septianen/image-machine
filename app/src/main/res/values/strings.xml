@@ -17,4 +17,10 @@
 
     <string name="machine_image">Machine Image</string>
     <string name="delete_image">Delete Image</string>
+
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="leave">Leave</string>
+    <string name="delete">Delete</string>
+    <string name="yes">Yes</string>
 </resources>

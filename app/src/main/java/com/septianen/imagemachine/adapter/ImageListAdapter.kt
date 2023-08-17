@@ -9,6 +9,7 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.septianen.imagemachine.R
+import com.septianen.imagemachine.listener.MachineListener
 import com.septianen.imagemachine.model.Image
 
 

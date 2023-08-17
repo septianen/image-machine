@@ -1,4 +1,4 @@
-package com.septianen.imagemachine.adapter
+package com.septianen.imagemachine.listener
 
 interface MachineListener {
 

@@ -1,6 +1,5 @@
 package com.septianen.imagemachine.viewmodel
 
-import android.provider.MediaStore.Images
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -117,5 +116,10 @@ class MachineDetailViewModel @Inject constructor(
     fun deleteData(machine: Machine, images: List<Image>) = viewModelScope.launch(Dispatchers.IO) {
         repository.deleteImages(images)
         repository.deleteMachine(machine)
+    }
+
+    fun countMaximumImage(selctedImage: Int, savedImage: Int): Int {
+
+        return minOf(selctedImage, (10 - savedImage))
     }
 }

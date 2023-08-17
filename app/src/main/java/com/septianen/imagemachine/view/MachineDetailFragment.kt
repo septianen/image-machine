@@ -17,10 +17,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.septianen.imagemachine.R
 import com.septianen.imagemachine.adapter.ImageListAdapter
-import com.septianen.imagemachine.adapter.MachineListener
 import com.septianen.imagemachine.constant.Constant
+import com.septianen.imagemachine.listener.MachineListener
 import com.septianen.imagemachine.constant.Message
 import com.septianen.imagemachine.databinding.FragmentMachineDetailBinding
+import com.septianen.imagemachine.dialog.ActionDialog
+import com.septianen.imagemachine.listener.DialogListener
 import com.septianen.imagemachine.model.Image
 import com.septianen.imagemachine.model.Machine
 import com.septianen.imagemachine.model.Temporary
@@ -33,7 +35,26 @@ import com.septianen.imagemachine.viewmodel.MachineDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MachineDetailFragment : Fragment(), MachineListener {
+
+class MachineDetailFragment : Fragment(), MachineListener, DialogListener {
+
+    private val backDialog by lazy {
+        ActionDialog(
+            this,
+            Constant.Dialog.BACK,
+            Message.Dialog.LEAVE,
+            Message.Dialog.PLEASE_SAVE_DATA
+        )
+    }
+
+    private val deleteDialog by lazy {
+        ActionDialog(
+            this,
+            Constant.Dialog.DELETE,
+            Message.Dialog.DELETE,
+            Message.Dialog.DELETED_DATA_WILL_LOST
+        )
+    }
 
     private val viewModel by viewModels<MachineDetailViewModel>()
 
@@ -64,6 +85,10 @@ class MachineDetailFragment : Fragment(), MachineListener {
         setupView()
         observeLiveData()
 
+        binding.ivBack.setOnClickListener {
+            backDialog.show(parentFragmentManager, backDialog.tag)
+        }
+
         binding.btnImage.setOnClickListener {
             if (isImageSelected) {
                 deleteSelectedImages()
@@ -92,8 +117,7 @@ class MachineDetailFragment : Fragment(), MachineListener {
         }
 
         binding.ivDelete.setOnClickListener {
-            viewModel.deleteData(machine, imagePaths)
-            findNavController().popBackStack()
+            deleteDialog.show(parentFragmentManager, deleteDialog.tag)
         }
     }
 
@@ -218,7 +242,7 @@ class MachineDetailFragment : Fragment(), MachineListener {
             if (data != null) {
 
                 if (data.clipData != null) {
-                    val counter = minOf(data.clipData!!.itemCount, 10)
+                    val counter = viewModel.countMaximumImage(data.clipData!!.itemCount, imagePaths.size)
 
                     for (item in 0 until counter) {
 
@@ -279,5 +303,23 @@ class MachineDetailFragment : Fragment(), MachineListener {
             imagePaths.remove(Temporary.image)
             updateImage()
         }
+    }
+
+    override fun onCloseDialog(requestCode: Int) {
+        when (requestCode) {
+            Constant.Dialog.BACK -> backDialog.dismiss()
+            Constant.Dialog.DELETE -> deleteDialog.dismiss()
+        }
+    }
+
+    override fun onButtonClicked(requestCode: Int) {
+        when (requestCode) {
+            Constant.Dialog.BACK -> backDialog.dismiss()
+            Constant.Dialog.DELETE -> {
+                deleteDialog.dismiss()
+                viewModel.deleteData(machine, imagePaths)
+            }
+        }
+        findNavController().popBackStack()
     }
 }

@@ -1,7 +1,6 @@
 package com.septianen.imagemachine.view
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.septianen.imagemachine.R
 import com.septianen.imagemachine.adapter.MachineListAdapter
-import com.septianen.imagemachine.adapter.MachineListener
+import com.septianen.imagemachine.listener.MachineListener
 import com.septianen.imagemachine.constant.Message
 import com.septianen.imagemachine.databinding.FragmentMachineListBinding
 import com.septianen.imagemachine.model.Machine
@@ -21,7 +20,6 @@ import com.septianen.imagemachine.model.Temporary
 import com.septianen.imagemachine.utils.Resource
 import com.septianen.imagemachine.viewmodel.MachineListViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlin.math.log
 
 @AndroidEntryPoint
 class MachineListFragment : Fragment(), MachineListener {

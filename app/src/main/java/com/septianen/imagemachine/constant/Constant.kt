@@ -4,6 +4,8 @@ import com.septianen.imagemachine.model.Machine
 
 object Constant {
 
+    const val MAXIMUM_IMAGE = 10
+
     object DB {
         const val MACHINE = "machine.db"
     }
@@ -15,5 +17,10 @@ object Constant {
 
     object IntentExtra {
         const val IMAGE_PATH = "PATH"
+    }
+
+    object Dialog {
+        const val BACK = 1
+        const val DELETE = 2
     }
 }
