@@ -1,7 +1,5 @@
 package com.septianen.imagemachine.constant
 
-import com.septianen.imagemachine.model.Machine
-
 object Constant {
 
     const val MAXIMUM_IMAGE = 10
@@ -13,10 +11,6 @@ object Constant {
     object Table {
         const val MACHINE = "machine"
         const val IMAGE = "image"
-    }
-
-    object IntentExtra {
-        const val IMAGE_PATH = "PATH"
     }
 
     object Dialog {

@@ -1,13 +1,10 @@
 package com.septianen.imagemachine.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.septianen.imagemachine.constant.Message
-import com.septianen.imagemachine.model.Image
 import com.septianen.imagemachine.model.Machine
-import com.septianen.imagemachine.model.Temporary
 import com.septianen.imagemachine.repository.MachineRepository
 import com.septianen.imagemachine.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,7 +24,7 @@ class ScannerlViewModel @Inject constructor(
     fun getData(machineNumber: Int?) = viewModelScope.launch(Dispatchers.IO) {
         machine = machineNumber?.let { repository.getMachineByNumber(it) }
         if (machine == null) {
-            machineLiveData.postValue(Resource.Error(Message.NO_DATA))
+            machineLiveData.postValue(Resource.Error(Message.DATA_NOT_FOUND))
         } else {
             machineLiveData.postValue(Resource.Success(machine!!))
         }

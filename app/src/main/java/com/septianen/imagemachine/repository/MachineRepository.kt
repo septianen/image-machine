@@ -11,9 +11,9 @@ class MachineRepository @Inject constructor(private val machineDao: MachineDao) 
     fun getMachines(
         category: Int? = null,
         sort: Int? = null
-    ): List<Machine>?  {
+    ): List<Machine>? {
 
-        val sorted = if (category == Constant.Sort.NAME && sort == Constant.Sort.ASC)
+        return if (category == Constant.Sort.NAME && sort == Constant.Sort.ASC)
             machineDao.getMachinesByNameAsc()
         else if (category == Constant.Sort.NAME && sort == Constant.Sort.DSC)
             machineDao.getMachinesByNameDesc()
@@ -23,8 +23,6 @@ class MachineRepository @Inject constructor(private val machineDao: MachineDao) 
             machineDao.getMachinesByTypeDesc()
         else
             machineDao.getMachinesByNameAsc()
-
-        return sorted
     }
     fun getMachineByNumber(number: Int) = machineDao.getMachineByNumber(number)
     fun upsertMachine(machine: Machine) = machineDao.upsertMachine(machine)
@@ -32,5 +30,4 @@ class MachineRepository @Inject constructor(private val machineDao: MachineDao) 
 
     fun getImages(machineId: Long) = machineDao.getImages(machineId)
     fun updateImages(machineId: Long, images: List<Image>) = machineDao.updateImages(machineId, images)
-    fun deleteImages(machineId: Long) = machineDao.deleteAllImage(machineId)
 }

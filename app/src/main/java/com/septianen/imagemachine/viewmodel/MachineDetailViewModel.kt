@@ -1,6 +1,5 @@
 package com.septianen.imagemachine.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -82,7 +81,6 @@ class MachineDetailViewModel @Inject constructor(
 
     private fun saveImages(imagePaths: List<Image>) = viewModelScope.launch(Dispatchers.IO) {
         this@MachineDetailViewModel.images = imagePaths
-        val images = ArrayList<Image>()
 
         imagePaths.map { it.copy(machineId = machine.id) }
 
@@ -100,11 +98,11 @@ class MachineDetailViewModel @Inject constructor(
     }
 
     fun deleteData(machineId: Long) = viewModelScope.launch(Dispatchers.IO) {
-        machineId?.let { repository.deleteMachineData(it) }
+        machineId.let { repository.deleteMachineData(it) }
     }
 
-    fun countMaximumImage(selctedImage: Int, savedImage: Int): Int {
+    fun countMaximumImage(selectedImage: Int, savedImage: Int): Int {
 
-        return minOf(selctedImage, (10 - savedImage))
+        return minOf(selectedImage, (10 - savedImage))
     }
 }

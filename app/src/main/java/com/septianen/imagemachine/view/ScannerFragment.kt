@@ -18,7 +18,6 @@ import com.septianen.imagemachine.utils.Resource
 import com.septianen.imagemachine.viewmodel.ScannerlViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
-
 @AndroidEntryPoint
 class ScannerFragment : Fragment() {
 
@@ -30,7 +29,7 @@ class ScannerFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentScannerBinding.inflate(layoutInflater, container, false)
         return binding.root
     }

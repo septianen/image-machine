@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import com.septianen.imagemachine.R
 import com.septianen.imagemachine.constant.Constant
 import com.septianen.imagemachine.databinding.DialogSortBinding
 import com.septianen.imagemachine.listener.SortListener

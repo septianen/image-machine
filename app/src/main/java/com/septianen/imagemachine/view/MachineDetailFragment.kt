@@ -38,6 +38,49 @@ import dagger.hilt.android.AndroidEntryPoint
 
 class MachineDetailFragment : Fragment(), MachineListener, DialogListener {
 
+
+    private val gallerylauncer =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+
+            val data = result.data
+
+
+            if (data != null) {
+
+                if (data.clipData != null) {
+                    val counter = viewModel.countMaximumImage(data.clipData!!.itemCount, images.size)
+
+                    for (item in 0 until counter) {
+
+                        val imagePath = getRealPathFromURI(
+                            data.clipData!!.getItemAt(item).uri,
+                            requireContext()
+                        )
+                        imagePath?.let { images.add(
+                            Image(
+                                imagePath = imagePath
+                            )
+                        ) }
+                    }
+                } else {
+                    val imagePath = data.data?.let {
+                        getRealPathFromURI(
+                            it,
+                            requireContext()
+                        )
+                    }
+                    imagePath?.let { images.add(
+                        Image(
+                            imagePath = imagePath
+                        )
+                    ) }
+                }
+
+                updateImage()
+            }
+        }
+
+
     private val imagePreviewlauncer = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
         // RESULT_OK if user click delete button
@@ -128,6 +171,42 @@ class MachineDetailFragment : Fragment(), MachineListener, DialogListener {
         binding.ivDelete.setOnClickListener {
             deleteDialog.show(parentFragmentManager, deleteDialog.tag)
         }
+    }
+
+    override fun onItemClicked(position: Int) {
+        val intent = Intent(requireContext(), ImagePreviewActivity::class.java)
+        Temporary.image = images[position]
+        imagePreviewlauncer.launch(intent)
+    }
+
+    override fun onItemLongClicked(positions: List<Int>) {
+
+        if (positions.isEmpty()) {
+            isImageSelected = false
+        } else {
+            isImageSelected = true
+            selectedPositions = positions
+        }
+
+        updateView()
+    }
+
+    override fun onCloseDialog(requestCode: Int) {
+        when (requestCode) {
+            Constant.Dialog.BACK -> backDialog.dismiss()
+            Constant.Dialog.DELETE -> deleteDialog.dismiss()
+        }
+    }
+
+    override fun onButtonClicked(requestCode: Int) {
+        when (requestCode) {
+            Constant.Dialog.BACK -> backDialog.dismiss()
+            Constant.Dialog.DELETE -> {
+                deleteDialog.dismiss()
+                machine.id?.let { viewModel.deleteData(it) }
+            }
+        }
+        findNavController().popBackStack()
     }
 
     private fun observeLiveData(){
@@ -251,83 +330,6 @@ class MachineDetailFragment : Fragment(), MachineListener, DialogListener {
         intent.type = "image/jpeg"
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         gallerylauncer.launch(intent)
-    }
-
-    private val gallerylauncer =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-
-            val data = result.data
-
-
-            if (data != null) {
-
-                if (data.clipData != null) {
-                    val counter = viewModel.countMaximumImage(data.clipData!!.itemCount, images.size)
-
-                    for (item in 0 until counter) {
-
-                        val imagePath = getRealPathFromURI(
-                            data.clipData!!.getItemAt(item).uri,
-                            requireContext()
-                        )
-                        imagePath?.let { images.add(
-                            Image(
-                                imagePath = imagePath
-                            )
-                        ) }
-                    }
-                } else {
-                    val imagePath = data.data?.let {
-                        getRealPathFromURI(
-                            it,
-                            requireContext()
-                        )
-                    }
-                    imagePath?.let { images.add(
-                        Image(
-                            imagePath = imagePath
-                        )
-                    ) }
-                }
-
-                updateImage()
-            }
-        }
-
-    override fun onItemClicked(position: Int) {
-        val intent = Intent(requireContext(), ImagePreviewActivity::class.java)
-        Temporary.image = images[position]
-        imagePreviewlauncer.launch(intent)
-    }
-
-    override fun onItemLongClicked(positions: List<Int>) {
-
-        if (positions.isEmpty()) {
-            isImageSelected = false
-        } else {
-            isImageSelected = true
-            selectedPositions = positions
-        }
-
-        updateView()
-    }
-
-    override fun onCloseDialog(requestCode: Int) {
-        when (requestCode) {
-            Constant.Dialog.BACK -> backDialog.dismiss()
-            Constant.Dialog.DELETE -> deleteDialog.dismiss()
-        }
-    }
-
-    override fun onButtonClicked(requestCode: Int) {
-        when (requestCode) {
-            Constant.Dialog.BACK -> backDialog.dismiss()
-            Constant.Dialog.DELETE -> {
-                deleteDialog.dismiss()
-                machine.id?.let { viewModel.deleteData(it) }
-            }
-        }
-        findNavController().popBackStack()
     }
 
     private fun hideKeyboard() {

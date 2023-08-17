@@ -1,7 +1,6 @@
 package com.septianen.imagemachine.utils
 
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 
 sealed class DateUtil {

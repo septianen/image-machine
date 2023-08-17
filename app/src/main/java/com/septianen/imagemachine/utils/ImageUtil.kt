@@ -13,10 +13,8 @@ sealed class ImageUtil {
         fun getRealPathFromURI(uri: Uri, context: Context): String? {
             val returnCursor = context.contentResolver.query(uri, null, null, null, null)
             val nameIndex =  returnCursor!!.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-            val sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE)
             returnCursor.moveToFirst()
             val name = returnCursor.getString(nameIndex)
-            val size = returnCursor.getLong(sizeIndex).toString()
             val file = File(context.filesDir, name)
             try {
                 val inputStream: InputStream? = context.contentResolver.openInputStream(uri)

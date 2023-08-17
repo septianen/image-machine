@@ -1,10 +1,8 @@
 package com.septianen.imagemachine.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.septianen.imagemachine.constant.Constant
 import com.septianen.imagemachine.constant.Message
 import com.septianen.imagemachine.model.Machine
 import com.septianen.imagemachine.repository.MachineRepository
@@ -12,7 +10,6 @@ import com.septianen.imagemachine.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.Collections
 import javax.inject.Inject
 
 

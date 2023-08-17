@@ -3,7 +3,6 @@ package com.septianen.imagemachine
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.septianen.imagemachine.databinding.ActivityMainBinding
-import com.septianen.imagemachine.utils.CommonUtil
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
