@@ -14,7 +14,7 @@ import com.septianen.imagemachine.model.Machine
 
 class MachineListAdapter(
     private val listener: MachineListener,
-    private val machines: List<Machine>
+    private var machines: List<Machine>? = null
 ): RecyclerView.Adapter<MachineListAdapter.ViewHolder>(){
 
     private lateinit var context: Context
@@ -40,16 +40,16 @@ class MachineListAdapter(
     }
 
     override fun getItemCount(): Int {
-        return machines.size
+        return machines?.size ?: 0
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.tvName.text = machines[position].name
-        holder.tvType.text = machines[position].type
+        holder.tvName.text = machines?.get(position)?.name ?: ""
+        holder.tvType.text = machines?.get(position)?.type ?: ""
 
         Glide
             .with(context)
-            .load(machines[position].thumbnail)
+            .load(machines?.get(position)?.thumbnail)
             .circleCrop()
             .placeholder(R.drawable.baseline_broken_image_24)
             .into(holder.ivThumbnail)
@@ -59,4 +59,8 @@ class MachineListAdapter(
         }
     }
 
+    fun setData(newMachines: List<Machine>) {
+        this.machines = newMachines
+        notifyDataSetChanged()
+    }
 }

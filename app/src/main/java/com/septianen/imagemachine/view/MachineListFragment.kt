@@ -1,6 +1,7 @@
 package com.septianen.imagemachine.view
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,8 @@ import com.septianen.imagemachine.adapter.MachineListAdapter
 import com.septianen.imagemachine.listener.MachineListener
 import com.septianen.imagemachine.constant.Message
 import com.septianen.imagemachine.databinding.FragmentMachineListBinding
+import com.septianen.imagemachine.dialog.SortDialog
+import com.septianen.imagemachine.listener.SortListener
 import com.septianen.imagemachine.model.Machine
 import com.septianen.imagemachine.model.Temporary
 import com.septianen.imagemachine.utils.Resource
@@ -22,14 +25,19 @@ import com.septianen.imagemachine.viewmodel.MachineListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MachineListFragment : Fragment(), MachineListener {
+class MachineListFragment : Fragment(), MachineListener, SortListener {
 
 
     private val viewModel by viewModels<MachineListViewModel>()
+    private val sortDialog by lazy {
+        SortDialog(this)
+    }
 
     private lateinit var binding: FragmentMachineListBinding
 
     private lateinit var machines: List<Machine>
+
+    private var adapter: MachineListAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,6 +59,14 @@ class MachineListFragment : Fragment(), MachineListener {
             Temporary.images = null
             openNextPage()
         }
+
+        binding.ivBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
+        binding.ivSort.setOnClickListener {
+            sortDialog.show(childFragmentManager, sortDialog.tag)
+        }
     }
 
 
@@ -59,6 +75,7 @@ class MachineListFragment : Fragment(), MachineListener {
             when(it) {
                 is Resource.Success -> {
                     machines = it.data ?: ArrayList()
+
                     updateView()
                 }
 
@@ -70,12 +87,13 @@ class MachineListFragment : Fragment(), MachineListener {
     }
 
     private fun setupView() {
+        adapter = MachineListAdapter(this)
         binding.rvMachine.layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
+        binding.rvMachine.adapter = adapter
     }
 
     private fun updateView() {
-        val adapter = MachineListAdapter(this, machines)
-        binding.rvMachine.adapter = adapter
+        adapter?.setData(machines)
     }
 
     private fun showMessage(message: String?) {
@@ -100,5 +118,12 @@ class MachineListFragment : Fragment(), MachineListener {
         super.onResume()
 
         viewModel.getMachines()
+    }
+
+    override fun onSort(category: Int, sort: Int) {
+
+        sortDialog.dismiss()
+
+        viewModel.sortMachines(category, sort)
     }
 }

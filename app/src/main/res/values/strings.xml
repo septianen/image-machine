@@ -23,4 +23,11 @@
     <string name="leave">Leave</string>
     <string name="delete">Delete</string>
     <string name="yes">Yes</string>
+
+    <string name="descending">Descending</string>
+    <string name="ascending">Ascending</string>
+
+    <string name="category">Category</string>
+    <string name="sort_by">Sort By</string>
+    <string name="sort">Sort</string>
 </resources>

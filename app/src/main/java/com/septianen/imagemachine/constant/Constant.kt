@@ -23,4 +23,11 @@ object Constant {
         const val BACK = 1
         const val DELETE = 2
     }
+
+    object Sort {
+        const val NAME = 10
+        const val TYPE = 11
+        const val ASC = 20
+        const val DSC = 21
+    }
 }

@@ -18,8 +18,21 @@ interface MachineDao {
     fun upsertMachine(machine: Machine): Long
     @Delete
     fun deleteMachine(machine: Machine)
-    @Query("SELECT * FROM ${Table.MACHINE}")
-    fun getMachines(): List<Machine>?
+    @Query("SELECT * FROM ${Table.MACHINE} ORDER BY :category ASC")
+    fun getMachines(category: String): List<Machine>?
+    @Query("SELECT * FROM ${Table.MACHINE} ORDER BY type ASC")
+    fun getMachinesByTypeAsc(): List<Machine>?
+
+    @Query("SELECT * FROM ${Table.MACHINE} ORDER BY type DESC")
+    fun getMachinesByTypeDesc(): List<Machine>?
+
+    @Query("SELECT * FROM ${Table.MACHINE} ORDER BY name ASC")
+    fun getMachinesByNameAsc(): List<Machine>?
+
+    @Query("SELECT * FROM ${Table.MACHINE} ORDER BY name DESC")
+    fun getMachinesByNameDesc(): List<Machine>?
+
+
 
     // Image
     @Insert(onConflict = OnConflictStrategy.REPLACE)
