@@ -47,6 +47,8 @@ class MachineListFragment : Fragment(), MachineListener {
         observeLiveData()
 
         binding.btnAdd.setOnClickListener {
+            Temporary.machine = null
+            Temporary.images = null
             openNextPage()
         }
     }

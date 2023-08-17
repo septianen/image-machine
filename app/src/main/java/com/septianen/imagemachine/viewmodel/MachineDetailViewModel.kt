@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.septianen.imagemachine.constant.Message
+import com.septianen.imagemachine.model.Image
 import com.septianen.imagemachine.model.Machine
 import com.septianen.imagemachine.model.Temporary
 import com.septianen.imagemachine.repository.MachineRepository
@@ -19,8 +20,11 @@ class MachineDetailViewModel @Inject constructor(
 ): ViewModel() {
 
     val machineLiveData: MutableLiveData<Resource<Machine>> = MutableLiveData()
+    val imagesLiveData: MutableLiveData<Resource<List<String>>> = MutableLiveData()
+    val saveItemLiveData: MutableLiveData<Resource<String>> = MutableLiveData()
 
     private lateinit var machine: Machine
+    private lateinit var imagePaths: MutableList<String>
 
     init {
 
@@ -29,27 +33,72 @@ class MachineDetailViewModel @Inject constructor(
 
     private fun getMachines() = viewModelScope.launch(Dispatchers.IO) {
         machine = Temporary.machine?.copy() ?: Machine()
+        getImages()
 
         machineLiveData.postValue(Resource.Success(machine))
     }
 
-    fun saveData(machine: Machine) = viewModelScope.launch(Dispatchers.IO) {
+    private fun getImages() {
+
+        imagePaths = machine.id?.let { repository.getImages(it) }?.toMutableList() ?: ArrayList()
+
+        imagesLiveData.postValue(Resource.Success(imagePaths))
+    }
+
+    fun saveData(machine: Machine, imagePaths: List<String>?) = viewModelScope.launch(Dispatchers.IO) {
 
         when {
             machine.name.isNullOrEmpty() -> postErrorValidaton(Message.EMPTY_MACHINE_NAME)
             machine.type.isNullOrEmpty() -> postErrorValidaton(Message.EMPTY_MACHINE_TYPE)
+            machine.qrNumber == null -> postErrorValidaton(Message.EMPTY_MACHINE_NUMBER)
+            machine.date == null ->
+                postErrorValidaton(Message.EMPTY_MACHINE_DATE)
+            imagePaths.isNullOrEmpty() -> postErrorValidaton(Message.EMPTY_IMAGES)
             else -> {
-                machine.id = repository.upsertMachine(machine)
 
-                this@MachineDetailViewModel.machine = machine
-                Temporary.machine = machine.copy()
+                // Save Machine
+                saveMachine()
 
-                machineLiveData.postValue(Resource.Success(machine))
+                // Save Images
+                saveImages(imagePaths)
+
+                saveItemLiveData.postValue(Resource.Success(Message.SUCCESS_SAVE_DATA))
             }
         }
     }
 
+    private fun saveMachine() = viewModelScope.launch(Dispatchers.IO) {
+        machine.id = repository.upsertMachine(machine)
+        this@MachineDetailViewModel.machine = machine
+        Temporary.machine = machine.copy()
+
+        machineLiveData.postValue(Resource.Success(machine))
+    }
+
+    private fun saveImages(imagePaths: List<String>) = viewModelScope.launch(Dispatchers.IO) {
+        this@MachineDetailViewModel.imagePaths = imagePaths.toMutableList()
+        val images = ArrayList<Image>()
+
+        for (path in imagePaths) {
+            images.add(
+                Image(
+                    machineId = machine.id,
+                    imagePath = path,
+                )
+            )
+        }
+
+        repository.upsertImages(images)
+
+        imagesLiveData.postValue(Resource.Success(imagePaths))
+    }
+
     private fun postErrorValidaton(message: String) {
-        machineLiveData.postValue(Resource.Error(message))
+        saveItemLiveData.postValue(Resource.Error(message))
+    }
+
+    fun deleteData(machine: Machine, images: List<String>) = viewModelScope.launch(Dispatchers.IO) {
+        repository.deleteImages(images)
+        repository.deleteMachine(machine)
     }
 }

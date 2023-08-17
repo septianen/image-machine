@@ -12,4 +12,8 @@ object Constant {
         const val MACHINE = "machine"
         const val IMAGE = "image"
     }
+
+    object Date {
+
+    }
 }

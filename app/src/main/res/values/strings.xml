@@ -6,11 +6,16 @@
 
     <string name="code_reader">Code Reader</string>
     <string name="machine_data">Machine Data</string>
+    <string name="machine_id">Machine ID</string>
     <string name="machine_name">Machine Name</string>
     <string name="machine_type">Machine Type</string>
+    <string name="machine_number">Machine QR Code Number</string>
+    <string name="machine_date">Last Maintenance Date</string>
 
     <string name="hint_machine_name">Machin 101</string>
     <string name="hint_machine_type">Ma 233</string>
 
     <string name="machine_image">Machine Image</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
