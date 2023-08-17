@@ -68,6 +68,9 @@ class MachineDetailViewModel @Inject constructor(
     }
 
     private fun saveMachine() = viewModelScope.launch(Dispatchers.IO) {
+        if (machine.thumbnail.isNullOrEmpty()) {
+            machine.thumbnail = imagePaths[0]
+        }
         machine.id = repository.upsertMachine(machine)
         this@MachineDetailViewModel.machine = machine
         Temporary.machine = machine.copy()
