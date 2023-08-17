@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav"
+    app:startDestination="@id/home">
+
+    <fragment
+        android:id="@+id/home"
+        android:name="com.septianen.imagemachine.view.HomeFragment"
+        android:label="home"
+        tools:layout="@layout/fragment_home"
+        app:defaultNavHost="true">
+        <action
+            android:id="@+id/openMachineList"
+            app:destination="@id/machine_list" />
+        <action
+            android:id="@+id/openScanner"
+            app:destination="@id/qr_scanner" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/machine_list"
+        android:name="com.septianen.imagemachine.view.MachineListFragment"
+        android:label="machine list"
+        tools:layout="@layout/fragment_machine_list">
+        <action
+            android:id="@+id/openMachineDetail"
+            app:destination="@id/machine_detail" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/machine_detail"
+        android:name="com.septianen.imagemachine.view.MachineDetailFragment"
+        android:label="machine detail"
+        tools:layout="@layout/fragment_machine_detail"/>
+
+    <fragment
+        android:id="@+id/qr_scanner"
+        android:name="com.septianen.imagemachine.view.ScannerFragment"
+        android:label="qr scanner"
+        tools:layout="@layout/fragment_scanner">
+        <action
+            android:id="@+id/openMachineDetail"
+            app:destination="@+id/machine_detail"/>
+    </fragment>
+
+</navigation>
